@@ -1,9 +1,26 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
-from django.http import HttpResponse
-
 def index(request):
-    return HttpResponse("Rango says hey there world!<br/><a href=\"/rango/about\">About page</a>")
+
+    # Construct a dictionary to pass to the template engine as its context.
+    # Note the key boldmessage is the same as {{ boldmessage }} in the template!
+    context_dict = {'boldmessage': "I am bold font from the context"}
+
+    # Return a rendered response to send to the client.
+    # We make use of the shortcut function to make our lives easier.
+    # Note that the first parameter is the template we wish to use.
+
+    return render(request, 'rango/index.html', context_dict)
 
 def about(request):
-    return HttpResponse("Rango says here is the about page.<br/>This tutorial has been puttogether by Enzo Roiz, 2161561<br/><a href=\"/rango\">Rango home page</a>")
+
+    # Construct a dictionary to pass to the template engine as its context.
+    # Note the key boldmessage is the same as {{ boldmessage }} in the template!
+    context_dict = {'standardmessage': "This tutorial has been put together by Enzo Roiz, 2161561."}
+
+    # Return a rendered response to send to the client.
+    # We make use of the shortcut function to make our lives easier.
+    # Note that the first parameter is the template we wish to use.
+
+    return render(request, 'rango/about.html', context_dict)

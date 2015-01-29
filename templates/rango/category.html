@@ -10,7 +10,9 @@
     <body>
         <h1>{{ category_name }}</h1>
         {% if category %}
-            <a href="/rango/category/{{ category_slug }}/add_page/"><strong>Add a page to this category!</strong></a><br/>
+            {% if user.is_authenticated %}
+                <a href="/rango/category/{{ category_slug }}/add_page/"><strong>Add a page to this category!</strong></a><br/>
+            {% endif %}
             {% if pages %}
             <ul>
                 {% for page in pages %}

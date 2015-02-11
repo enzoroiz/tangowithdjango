@@ -10,16 +10,16 @@ from rango.models import UserProfile
 # Create a new class that redirects the user to the index page, if successful at logging      
 class MyRegistrationView(RegistrationView):
     def get_success_url(self,request, user):
-        print request.FILES
-        print request.POST
         profile = UserProfile(user=user)
+
         if 'website' in request.POST:
             profile.website = request.POST["website"]
         if 'picture' in request.FILES:
             profile.picture = request.FILES["picture"]
+            print profile.picture
         profile.save()
         return '/rango/'
-
+    
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^rango/', include('rango.urls')),

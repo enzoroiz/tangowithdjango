@@ -8,17 +8,42 @@
 <div class="page-header">
 	<h1>{{ category_name }}</h1>
 </div>
+
+	{% if user.is_authenticated %}
+	     <!-- Display the search form elements here -->
+	     <p><input class="form-control" type="text" style="width: 300px;" name="query" value="{{category_name}}" id="query" /></p>
+	     <input id="search" class="btn btn-primary" type="submit" name="submit" value="Search" />
+		<br/>
+		<br/>
+    {% endif %}
     
     {% if category %}
         {% if pages %}
-        <ul>
+        		<ul>
                 {% for page in pages %}
-                <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                	<li>
+                	<a href="{% url 'goto' %}?page_id={{page.id}}">{{ page.title }}</a>
+        			{% if page.views > 1 %}
+            			({{ page.views }} views)
+            		{% elif page.views == 1 %}
+            			({{ page.views }} view)
+       				{% endif %}
+       				</li>
                 {% endfor %}
                 </ul>
         {% else %}
                 <strong>No pages currently in category.</strong><br/>
     {% endif %}
+    
+    <p>
+    {% if user.is_authenticated %}
+	        <button id="likes" data-catid="{{category.id}}" class="btn btn-primary" type="button">
+	        	<span class="glyphicon glyphicon-thumbs-up"></span>
+	        	Like
+	        </button>
+	{% endif %}
+	<strong id="like_count">{{ category.likes }}</strong> people like this category<br/>
+	</p>
 
         {% if user.is_authenticated %}
 	        <a href="{% url 'add_page' category.slug %}">Add a Page</a>
@@ -29,5 +54,9 @@
 	        <a href="{% url 'index' %}">Click to go back to the Home page!</a><br />
 	        <img src="{% static "images/rango_cat_not_found.jpg" %}" alt="Picture of Rango" />
 	    {% endif %}
-
+	    <br/>
+	    <br/>
+	    <p>Category views: {{ category.views }}</p>
+		
+		<div id="category_search"></div>
 {% endblock %}

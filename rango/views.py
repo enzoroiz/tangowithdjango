@@ -1,6 +1,9 @@
 from datetime import datetime
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -265,17 +268,42 @@ def profile(request, username):
     userprofile, created = UserProfile.objects.get_or_create(user=act_user)
     
     if request.method == 'POST':
-        print request
-        if 'email' in request.POST:
-            act_user.email = request.POST['email']
-        if 'website' in request.POST:
-            userprofile.website = request.POST["website"]
-        if 'picture' in request.FILES:
-            userprofile.picture = request.FILES["picture"]
+        if 'is_password' in request.POST:
+            print "IS_PASSWORD"
+            data = {}
+            if 'old_password' in request.POST:
+                data['old_password'] = request.POST['old_password']
+            if 'new_password1' in request.POST:
+                data['new_password1'] = request.POST['new_password1']
+            if 'new_password2' in request.POST:
+                data['new_password2'] = request.POST['new_password2']
+            form = PasswordChangeForm(act_user, data)
+            if form.is_valid():
+                form.save(commit=True)
+                act_user.save()
+                user = authenticate(username=username, password=data['new_password1'])
+                login(request, user)
+                messages.success(request, 'Password changed.')
+                print messages
+                return render(request, 'rango/profile.html', {'userprofile': userprofile, 'act_user': act_user, 'user':user })
+            else:
+                if form.errors:
+                    print form.errors
+                return render(request, 'rango/profile.html', {'userprofile': userprofile, 'act_user': act_user, 'user':act_user, 'form':form})
+        else:
+            if 'email' in request.POST:
+                act_user.email = request.POST['email']
+            if 'website' in request.POST:
+                userprofile.website = request.POST["website"]
+            if 'picture' in request.FILES:
+                userprofile.picture = request.FILES["picture"]
             
-        userprofile.save()
-        act_user.save()
-
+            userprofile.save()
+            act_user.save()
+            messages.success(request, 'Profile details updated.')
+    
+    print messages, "aas"    
+    
     return render(request, 'rango/profile.html', {'userprofile': userprofile, 'act_user': act_user })
 
 @login_required
@@ -283,6 +311,12 @@ def edit_profile(request):
     user = request.user
     userprofile = UserProfile.objects.get(user=user)
     return render(request, 'rango/edit_profile.html', {'user':user, 'userprofile':userprofile})
+
+@login_required
+def change_password(request):
+    user = request.user
+    userprofile = UserProfile.objects.get(user=user)
+    return render(request, 'rango/change_password.html', {'user':user, 'userprofile':userprofile})
 
 @login_required
 def users_profiles(request):

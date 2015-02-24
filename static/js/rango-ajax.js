@@ -50,4 +50,19 @@ $(document).ready(function() {
 		});
 	});
 
+//	Change Password
+	$('#change_password').click(function(){
+		$.get('/rango/change_password/', {}, function(data){
+			$('#change_password_div').html(data).ready(function(){
+				$('#cancel_password').click(function(){
+					location.reload()
+				});
+			});
+		$('#profile_data').hide();
+		});
+	});
+
+	$('#cancel_password').click(function() {
+		window.location.replace(window.location.href);
+	});
 });
